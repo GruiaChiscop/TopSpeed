@@ -1,0 +1,53 @@
+﻿  Application.cpp
+  Common.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Application.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Common.cpp')
+  
+  D3DFont.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/D3DFont.cpp')
+  
+  D3DSprite.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/D3DSprite.cpp')
+  
+  Game.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Game.cpp')
+  
+  Input.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Input.cpp')
+  
+  Light.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Light.cpp')
+  
+  Line.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Line.cpp')
+  
+  Mesh.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Mesh.cpp')
+  
+  Particle.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Particle.cpp')
+  
+  Sound.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Sound.cpp')
+  
+  Timer.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Timer.cpp')
+  
+  Utilities.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\DxCommon\If\Defs.h(10,10): error C1083: Cannot open include file: 'd3d8types.h': No such file or directory
+  (compiling source file 'Src/Utilities.cpp')
+  
+  Generating Code...

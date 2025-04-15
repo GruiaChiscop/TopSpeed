@@ -1,0 +1,35 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1126,5): warning MSB4211: The property "GetTargetPathDependsOn" is being set to a value for the first time, but it was already consumed at "C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\amd64\Microsoft.Common.CurrentVersion.targets (2243,5)".
+cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  Window.cpp
+  Tracer.cpp
+  Mutex.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(41,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(44,9): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(45,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  File.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(19,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(26,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(39,31): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(48,31): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(57,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26): warning C4473: 'fscanf_s' : not enough arguments passed for format string
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      the missing variadic argument 2 is required by format string '%c'
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      this argument is used as a buffer size
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(204,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(225,21): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(420,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,25): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(448,25): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Common.cpp
+  Generating Code...
+C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(1395,5): warning MSB8012: TargetPath(C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\Debug\Common.dll) does not match the Linker's OutputFile property value (C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Output\Common.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+Common.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+     Creating library .\Debug/Common.lib and object .\Debug/Common.exp
+File.obj : error LNK2019: unresolved external symbol __imp___invalid_parameter referenced in function "void * __cdecl std::_Allocate_manually_vector_aligned<struct std::_Default_allocate_traits>(unsigned int)" (??$_Allocate_manually_vector_aligned@U_Default_allocate_traits@std@@@std@@YAPAXI@Z)
+File.obj : error LNK2019: unresolved external symbol __imp___CrtDbgReport referenced in function "void * __cdecl std::_Allocate_manually_vector_aligned<struct std::_Default_allocate_traits>(unsigned int)" (??$_Allocate_manually_vector_aligned@U_Default_allocate_traits@std@@@std@@YAPAXI@Z)
+..\Output\Common.dll : fatal error LNK1120: 2 unresolved externals

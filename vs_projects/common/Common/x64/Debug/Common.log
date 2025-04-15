@@ -1,0 +1,45 @@
+﻿  Common.cpp
+  File.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(19,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(26,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(39,31): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(48,31): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(57,27): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26): warning C4473: 'fscanf_s' : not enough arguments passed for format string
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      the missing variadic argument 2 is required by format string '%c'
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(135,26):
+      this argument is used as a buffer size
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(224,39): warning C4267: 'initializing': conversion from 'size_t' to 'UInt', possible loss of data
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(204,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(225,21): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(260,39): warning C4267: 'initializing': conversion from 'size_t' to 'UInt', possible loss of data
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,84): warning C4267: 'argument': conversion from 'size_t' to 'const Type', possible loss of data
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,84): warning C4267:         with
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,84): warning C4267:         [
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,84): warning C4267:             Type=UInt
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,84): warning C4267:         ]
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(440,53): warning C4267: 'argument': conversion from 'size_t' to 'const Type', possible loss of data
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(440,53): warning C4267:         with
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(440,53): warning C4267:         [
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(440,53): warning C4267:             Type=UInt
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(440,53): warning C4267:         ]
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(447,43): warning C4267: 'initializing': conversion from 'size_t' to 'UInt', possible loss of data
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(420,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(439,25): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\File.cpp(448,25): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Mutex.cpp
+  Tracer.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(41,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(44,9): warning C4996: '_vsnprintf': This function or variable may be unsafe. Consider using _vsnprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Tracer.cpp(45,9): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Window.cpp
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Window.cpp(41,48): warning C4312: 'type cast': conversion from 'Int' to 'LPCTSTR' of greater size
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Window.cpp(44,22): warning C4312: 'type cast': conversion from 'Int' to 'LPCSTR' of greater size
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Window.cpp(46,43): warning C4312: 'type cast': conversion from 'Int' to 'LPCTSTR' of greater size
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\src\Window.cpp(64,48): warning C4312: 'type cast': conversion from 'Int' to 'LPTSTR' of greater size
+  Generating Code...
+  Common.vcxproj -> C:\Users\Gruia\GitHub\TopSpeed\vs_projects\common\x64\Debug\Common.lib
