@@ -4,6 +4,7 @@
 * Code contributors: Davy Kager, Davy Loots and Leonard de Ruijter
 * This program is distributed under the terms of the GNU General Public License version 3.
 */
+#include <windows.h>
 #include <DxCommon/If/Application.h>
 
 #include <Dxerr8.h>

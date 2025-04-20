@@ -1,0 +1,262 @@
+﻿cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  Utilities.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Utilities.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Utilities.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Utilities.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Utilities.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Utilities.cpp(38,9): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Utilities.cpp(47,9): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Utilities.cpp(54,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Timer.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Timer.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Timer.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Timer.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Timer.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Timer.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+  Sound.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Sound.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Sound.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Sound.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Sound.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Sound.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Sound.cpp(188,5): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Sound.cpp(453,12): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Particle.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Particle.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Particle.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Particle.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Particle.cpp')
+  
+  Network.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Network.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Network.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Network.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Network.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Network.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Network.cpp(555,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Network.cpp(572,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Music.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Music.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Music.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Music.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Music.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Music.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+  Mesh.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Mesh.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Mesh.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Mesh.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Mesh.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Mesh.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Mesh.cpp(84,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Mesh.cpp(169,21): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Mesh.cpp(828,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Line.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Line.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Line.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Line.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Line.cpp')
+  
+  Light.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Light.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Light.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Light.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Light.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Light.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+  Input.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Input.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Input.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Input.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Input.cpp')
+  
+  Game.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Game.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Game.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Game.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Game.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Game.cpp(164,39): warning C4477: 'sprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Huge'
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Game.cpp(164,39):
+      consider using '%lld' in the format string
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Game.cpp(164,39):
+      consider using '%I64d' in the format string
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Game.cpp(164,21): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  D3DSprite.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/D3DSprite.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/D3DSprite.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/D3DSprite.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/D3DSprite.cpp')
+  
+  D3DFont.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/D3DFont.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/D3DFont.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/D3DFont.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/D3DFont.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/D3DFont.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\D3DFont.cpp(64,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Common.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Common.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Common.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Common.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Common.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\Dxsdk\Include\dmerror.h(12,9): warning C4005: 'FACILITY_DIRECTMUSIC': macro redefinition
+  (compiling source file 'Src/Common.cpp')
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared\winerror.h(182,9):
+      see previous definition of 'FACILITY_DIRECTMUSIC'
+  
+  Application.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C2146: syntax error: missing ';' before identifier 'PVOID64'
+  (compiling source file 'Src/Application.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(426,27): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Application.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,13): error C3646: 'Buffer': unknown override specifier
+  (compiling source file 'Src/Application.cpp')
+  
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um\winnt.h(14515,5): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+  (compiling source file 'Src/Application.cpp')
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Application.cpp(153,39): warning C4477: 'sprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'Huge'
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Application.cpp(153,39):
+      consider using '%lld' in the format string
+      C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Application.cpp(153,39):
+      consider using '%I64d' in the format string
+  
+C:\Users\Gruia\GitHub\TopSpeed\vs_projects\dxcommon\Src\Application.cpp(153,21): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  Generating Code...

@@ -1,20 +1,31 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonStatic", "CommonStatic.vcproj", "{0EAC2978-054D-4021-ABC2-BDA581EFC28F}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CommonStatic", "CommonStatic.vcxproj", "{0EAC2978-054D-4021-ABC2-BDA581EFC28F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Debug|Win32.Build.0 = Debug|Win32
+		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Debug|x64.ActiveCfg = Debug|x64
+		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Debug|x64.Build.0 = Debug|x64
 		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Release|Win32.ActiveCfg = Release|Win32
 		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Release|Win32.Build.0 = Release|Win32
+		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Release|x64.ActiveCfg = Release|x64
+		{0EAC2978-054D-4021-ABC2-BDA581EFC28F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {72FAB052-AD2A-4357-9436-6A85B250C0A7}
 	EndGlobalSection
 EndGlobal
