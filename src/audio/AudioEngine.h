@@ -4,8 +4,13 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <mutex>
 
 namespace TopSpeed {
+
+// Forward declarations
+struct AudioEngineImpl;
+struct AudioSourceData;
 
 /**
  * Audio source representation
@@ -113,15 +118,22 @@ public:
     void Shutdown();
 
 private:
-    // NOTE: Placeholder implementation using miniaudio
-    // Actual implementation requires miniaudio integration
-    
     std::unordered_map<uint32_t, AudioSource> sources_;
+    std::unordered_map<uint32_t, AudioSourceData> sources_data_;
+    mutable std::mutex sources_mutex_;
+    std::unique_ptr<AudioEngineImpl> impl_;
     uint32_t next_source_id_;
     float master_volume_;
     bool initialized_;
 
     uint32_t AllocateSourceId();
+
+    /**
+     * Callback for miniaudio device to fill audio buffer
+     */
+    void OnAudioData(float* pOutput, uint32_t frameCount);
+
+    friend struct AudioEngineImpl;
 };
 
 } // namespace TopSpeed
