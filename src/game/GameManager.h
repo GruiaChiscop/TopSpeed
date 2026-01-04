@@ -1,160 +1,159 @@
 #pragma once
 
-#include "GameObject.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "Obstacle.h"
-#include "PowerUp.h"
 #include <memory>
+#include <string>
 #include <vector>
-#include <unordered_map>
+#include <glm/glm.hpp>
+
+// Forward declarations
+class RaceManager;
+class Vehicle;
+class Track;
+class InputSystem;
+class RacingInput;
+class AudioSystem;
+class UISystem;
+class RaceUI;
+class RenderSystem;
+class RaceRenderer;
 
 /**
  * @class GameManager
- * @brief Central manager for game state, entities, and gameplay logic
+ * @brief Central manager integrating all game systems
  * 
- * Manages the game loop, entity lifecycle, collision detection,
- * scoring, and game rules. Acts as the main coordinator for all game systems.
+ * Handles initialization, updating, and rendering of all game subsystems.
+ * Provides the main game loop interface and system lifecycle management.
  */
 class GameManager {
 public:
     enum class GameState {
-        Uninitialized,  // Not started
-        Playing,        // Active gameplay
-        Paused,         // Game paused
-        LevelComplete,  // Level finished successfully
-        GameOver,       // Player died
-        Victory         // All levels completed
+        Uninitialized,
+        MainMenu,
+        Loading,
+        Racing,
+        Paused,
+        RaceFinished,
+        Shutdown
     };
 
-    enum class Difficulty {
-        Easy,
-        Normal,
-        Hard,
-        Extreme
+    enum class DifficultyMode {
+        Easy,      // Slower AI, forgiving physics
+        Normal,    // Standard AI and physics
+        Hard,      // Aggressive AI, realistic physics
+        Expert     // Very aggressive AI, hardcore physics
+    };
+
+    struct GameConfig {
+        // Graphics
+        int screen_width = 1920;
+        int screen_height = 1080;
+        bool vsync_enabled = true;
+        bool anti_aliasing = true;
+
+        // Audio
+        bool audio_enabled = true;
+        float master_volume = 0.8f;
+        float music_volume = 0.6f;
+        float sfx_volume = 0.8f;
+
+        // Gameplay
+        DifficultyMode difficulty = DifficultyMode::Normal;
+        int num_laps = 3;
+        int num_racers = 4;
+        bool enable_collisions = true;
+        bool enable_damage = true;
+
+        // Input
+        bool use_keyboard = true;
+        bool use_gamepad = true;
+        bool manual_transmission = false;
+
+        // Debug
+        bool debug_mode = false;
+        bool show_fps = false;
+        bool show_debug_info = false;
     };
 
     GameManager();
     ~GameManager();
 
     // Lifecycle
-    bool Initialize();
+    bool Initialize(const GameConfig& config);
     void Shutdown();
+    bool IsInitialized() const { return initialized_; }
+
+    // Game loop
     void Update(float deltaTime);
     void Render();
+    void ProcessEvents();
+    bool IsRunning() const { return game_state_ != GameState::Shutdown; }
 
-    // Game state
-    GameState GetGameState() const { return game_state_; }
+    // State management
     void SetGameState(GameState state);
-    bool IsGameOver() const;
-    bool IsLevelComplete() const;
-    bool IsGamePaused() const;
+    GameState GetGameState() const { return game_state_; }
+    const char* GetGameStateString() const;
 
     // Game control
-    void Play();
-    void Pause();
-    void Resume();
-    void Restart();
+    void StartRace();
+    void PauseGame();
+    void ResumeGame();
+    void EndRace();
+    void RestartRace();
     void QuitGame();
 
-    // Difficulty
-    Difficulty GetDifficulty() const { return difficulty_; }
-    void SetDifficulty(Difficulty diff) { difficulty_ = diff; }
+    // Configuration
+    void SetConfig(const GameConfig& config) { config_ = config; }
+    GameConfig GetConfig() const { return config_; }
 
-    // Player management
-    Player* GetPlayer() const { return player_.get(); }
-    void SetPlayer(std::shared_ptr<Player> player);
-    bool HasPlayer() const { return player_ != nullptr; }
+    // System access
+    RaceManager* GetRaceManager() { return race_manager_.get(); }
+    InputSystem* GetInputSystem() { return input_system_.get(); }
+    RacingInput* GetRacingInput() { return racing_input_.get(); }
+    AudioSystem* GetAudioSystem() { return audio_system_.get(); }
+    UISystem* GetUISystem() { return ui_system_.get(); }
+    RaceUI* GetRaceUI() { return race_ui_.get(); }
+    RenderSystem* GetRenderSystem() { return render_system_.get(); }
+    RaceRenderer* GetRaceRenderer() { return race_renderer_.get(); }
 
-    // Entity management
-    void AddEntity(std::shared_ptr<GameObject> entity);
-    void RemoveEntity(std::shared_ptr<GameObject> entity);
-    void ClearEntities();
-    std::vector<std::shared_ptr<GameObject>> GetEntities() const;
-    std::vector<std::shared_ptr<Enemy>> GetEnemies() const;
-    std::vector<std::shared_ptr<Obstacle>> GetObstacles() const;
-    std::vector<std::shared_ptr<PowerUp>> GetPowerUps() const;
+    // Timing
+    float GetDeltaTime() const { return delta_time_; }
+    float GetTotalTime() const { return total_time_; }
+    int GetFrameCount() const { return frame_count_; }
+    float GetFPS() const { return fps_; }
 
-    // Entity spawning
-    std::shared_ptr<Enemy> SpawnEnemy(const glm::vec3& position, const std::string& name = "Enemy");
-    std::shared_ptr<Obstacle> SpawnObstacle(const glm::vec3& position, Obstacle::ObstacleType type = Obstacle::ObstacleType::Wall, const std::string& name = "Obstacle");
-    std::shared_ptr<PowerUp> SpawnPowerUp(const glm::vec3& position, PowerUp::PowerUpType type = PowerUp::PowerUpType::HealthRestore, const std::string& name = "PowerUp");
-
-    // Collision system
-    void UpdateCollisions();
-    std::vector<GameObject*> GetCollidingObjects(const GameObject& object) const;
-    bool CheckCollision(const GameObject& a, const GameObject& b) const;
-
-    // Scoring system
-    uint32_t GetScore() const { return player_ ? player_->GetScore() : 0; }
-    void AddScore(uint32_t points);
-    void ResetScore();
-
-    // Lives and health
-    int GetLives() const { return player_ ? player_->GetLives() : 0; }
-    void SetLives(int lives);
-    bool IsPlayerAlive() const { return player_ && player_->IsAlive(); }
-
-    // Level management
-    int GetCurrentLevel() const { return current_level_; }
-    void SetCurrentLevel(int level) { current_level_ = level; }
-    void NextLevel();
-    void PreviousLevel();
-    int GetMaxLevel() const { return max_level_; }
-
-    // Game time
-    float GetElapsedTime() const { return elapsed_time_; }
-    float GetLevelTime() const { return level_time_; }
-    void ResetLevelTime() { level_time_ = 0.0f; }
-
-    // Difficulty scaling
-    float GetDifficultyMultiplier() const;
-    float GetEnemyDamageMultiplier() const;
-    float GetEnemySpeedMultiplier() const;
-    float GetScoreMultiplier() const;
-
-    // Game rules
-    bool CheckWinCondition() const;
-    bool CheckLoseCondition() const;
-    void ApplyGameRules(float deltaTime);
-
-    // Debug info
+    // Debug
     std::string GetDebugInfo() const;
-    int GetEntityCount() const { return entities_.size(); }
-    int GetEnemyCount() const;
-    int GetObstacleCount() const;
-    int GetPowerUpCount() const;
+    std::string GetSystemsStatus() const;
 
 private:
-    GameState game_state_ = GameState::Uninitialized;
-    Difficulty difficulty_ = Difficulty::Normal;
-
-    // Entities
-    std::shared_ptr<Player> player_;
-    std::vector<std::shared_ptr<GameObject>> entities_;
-    std::vector<std::shared_ptr<Enemy>> enemies_;
-    std::vector<std::shared_ptr<Obstacle>> obstacles_;
-    std::vector<std::shared_ptr<PowerUp>> powerups_;
-
     // Game state
-    int current_level_ = 1;
-    int max_level_ = 5;  // Can be configured
-    float elapsed_time_ = 0.0f;
-    float level_time_ = 0.0f;
-    bool paused_ = false;
+    GameState game_state_ = GameState::Uninitialized;
+    GameConfig config_;
+    bool initialized_ = false;
 
-    // Game timing
-    float time_scale_ = 1.0f;
+    // Timing
+    float delta_time_ = 0.0f;
+    float total_time_ = 0.0f;
+    int frame_count_ = 0;
+    float fps_ = 0.0f;
+    float fps_timer_ = 0.0f;
+
+    // Subsystems (unique pointers for automatic cleanup)
+    std::unique_ptr<RaceManager> race_manager_;
+    std::unique_ptr<InputSystem> input_system_;
+    std::unique_ptr<RacingInput> racing_input_;
+    std::unique_ptr<AudioSystem> audio_system_;
+    std::unique_ptr<UISystem> ui_system_;
+    std::unique_ptr<RaceUI> race_ui_;
+    std::unique_ptr<RenderSystem> render_system_;
+    std::unique_ptr<RaceRenderer> race_renderer_;
 
     // Helper methods
-    void UpdateEntities(float deltaTime);
-    void UpdatePlayer(float deltaTime);
-    void UpdateEnemies(float deltaTime);
-    void UpdateObstacles(float deltaTime);
-    void UpdatePowerUps(float deltaTime);
-    void CleanupDeadEntities();
-    void CheckAndApplyCollisions();
-    void OnPlayerDeath();
-    void OnLevelComplete();
-    void OnGameOver();
+    bool InitializeSystems();
+    void ShutdownSystems();
+    void UpdateSystems(float deltaTime);
+    void RenderSystems();
+    void CalculateFPS(float deltaTime);
+    void HandleGameStateTransitions();
+    void UpdateInputBindings();
 };
