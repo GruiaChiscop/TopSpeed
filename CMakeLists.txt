@@ -3,7 +3,11 @@ project(TopSpeed VERSION 3.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /permissive-")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+endif()
 
 # Options
 option(TOPSPEED_BUILD_SERVER "Build the race server" ON)
@@ -13,6 +17,21 @@ option(TOPSPEED_ENABLE_SCREEN_READER "Enable screen reader support" ON)
 
 # Find required packages
 find_package(SDL3 REQUIRED)
+find_package(Vorbis REQUIRED)
+find_package(Ogg REQUIRED)
+
+# Download and include miniaudio (header-only)
+include(FetchContent)
+FetchContent_Declare(
+    miniaudio
+    URL https://github.com/mackron/miniaudio/releases/download/0.11.18/miniaudio.h
+    DOWNLOAD_NO_EXTRACT TRUE
+)
+FetchContent_MakeAvailable(miniaudio)
+
+# Create miniaudio include target
+add_library(miniaudio INTERFACE)
+target_include_directories(miniaudio INTERFACE ${miniaudio_SOURCE_DIR})
 
 # Common library
 add_library(TopSpeedCommon STATIC
@@ -25,10 +44,11 @@ target_include_directories(TopSpeedCommon PUBLIC
 # DX Common library (wrapper for DirectX functionality)
 add_library(DXCommon STATIC
     vs_projects/dxcommon/src/dxcommon.cpp
-    vs_projects/dxcommon/src/SDL3Wrapper.cpp
+    src/platform/SDL3Wrapper.cpp
 )
 target_include_directories(DXCommon PUBLIC
     vs_projects/dxcommon/include
+    src/platform
     ${SDL3_INCLUDE_DIRS}
 )
 target_link_libraries(DXCommon PUBLIC
@@ -36,17 +56,21 @@ target_link_libraries(DXCommon PUBLIC
     SDL3::SDL3
 )
 
-# Audio library (miniaudio)
+# Audio library (miniaudio + Vorbis)
 add_library(TopSpeedAudio STATIC
     src/audio/AudioEngine.cpp
     src/audio/VorbisDecoder.cpp
 )
 target_include_directories(TopSpeedAudio PUBLIC
     src/audio
+    ${VORBIS_INCLUDE_DIR}
+    ${OGG_INCLUDE_DIR}
 )
 target_link_libraries(TopSpeedAudio PUBLIC
-    ogg
-    vorbis
+    miniaudio
+    Vorbis::Vorbis
+    Vorbis::VorbisFile
+    Ogg::Ogg
 )
 
 # Screen Reader library
@@ -56,8 +80,14 @@ add_library(TopSpeedScreenReader STATIC
 target_include_directories(TopSpeedScreenReader PUBLIC
     src/accessibility
 )
+if(WIN32)
+    target_link_libraries(TopSpeedScreenReader PUBLIC
+        ole32
+        oleaut32
+    )
+endif()
 
-# Networking library
+# Networking library (UDP/TCP)
 add_library(TopSpeedNetworking STATIC
     src/network/NetworkManager.cpp
     src/network/UDPSocket.cpp
@@ -66,6 +96,17 @@ add_library(TopSpeedNetworking STATIC
 target_include_directories(TopSpeedNetworking PUBLIC
     src/network
 )
+if(WIN32)
+    target_link_libraries(TopSpeedNetworking PUBLIC
+        ws2_32
+        mswsock
+        advapi32
+    )
+else()
+    target_link_libraries(TopSpeedNetworking PUBLIC
+        pthread
+    )
+endif()
 
 # Main game client
 if(TOPSPEED_BUILD_CLIENT)
@@ -88,6 +129,7 @@ if(TOPSPEED_BUILD_CLIENT)
     
     target_include_directories(TopSpeed PRIVATE
         vs_projects/topspeed
+        src
         ${SDL3_INCLUDE_DIRS}
     )
     
@@ -117,6 +159,7 @@ if(TOPSPEED_BUILD_SERVER)
     
     target_include_directories(TopSpeedServer PRIVATE
         vs_projects/topspeed
+        src
     )
     
     target_link_libraries(TopSpeedServer PRIVATE
@@ -127,4 +170,15 @@ endif()
 
 # Testing
 enable_testing()
-add_subdirectory(tests)
+# Add tests subdirectory if it exists
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/CMakeLists.txt")
+    add_subdirectory(tests)
+endif()
+
+# Print build info
+message(STATUS "TopSpeed ${PROJECT_VERSION}")
+message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Build Client: ${TOPSPEED_BUILD_CLIENT}")
+message(STATUS "Build Server: ${TOPSPEED_BUILD_SERVER}")
+message(STATUS "Enable Networking: ${TOPSPEED_ENABLE_NETWORKING}")
+message(STATUS "Enable Screen Reader: ${TOPSPEED_ENABLE_SCREEN_READER}")
