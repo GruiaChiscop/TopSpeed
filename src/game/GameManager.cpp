@@ -1,472 +1,440 @@
 #include "GameManager.h"
-#include <algorithm>
+#include "RaceManager.h"
+#include "Vehicle.h"
+#include "Track.h"
+#include "../input/InputSystem.h"
+#include "../input/RacingInput.h"
+#include "../audio/AudioSystem.h"
+#include "../ui/UISystem.h"
+#include "../ui/RaceUI.h"
+#include "../graphics/RenderSystem.h"
+#include "../graphics/RaceRenderer.h"
 #include <sstream>
 #include <iomanip>
+#include <chrono>
 
-GameManager::GameManager() {}
-
-GameManager::~GameManager() {
-    Shutdown();
+GameManager::GameManager() {
 }
 
-bool GameManager::Initialize() {
-    if (game_state_ != GameState::Uninitialized) {
+GameManager::~GameManager() {
+    if (initialized_) {
+        Shutdown();
+    }
+}
+
+bool GameManager::Initialize(const GameConfig& config) {
+    if (initialized_) {
+        return true;
+    }
+
+    config_ = config;
+    game_state_ = GameState::Loading;
+
+    // Initialize all subsystems
+    if (!InitializeSystems()) {
+        Shutdown();
         return false;
     }
 
-    // Create player if not set
-    if (!player_) {
-        player_ = std::make_shared<Player>("MainPlayer");
-        player_->Initialize();
-        player_->SetPosition(0.0f, 1.0f, 0.0f);
-    }
-
-    game_state_ = GameState::Playing;
-    elapsed_time_ = 0.0f;
-    level_time_ = 0.0f;
+    // Setup initial game state
+    game_state_ = GameState::MainMenu;
+    initialized_ = true;
     return true;
 }
 
 void GameManager::Shutdown() {
-    ClearEntities();
-    if (player_) {
-        player_->Shutdown();
-        player_.reset();
+    ShutdownSystems();
+    game_state_ = GameState::Shutdown;
+    initialized_ = false;
+}
+
+bool GameManager::InitializeSystems() {
+    // Initialize rendering first (needed for UI)
+    render_system_ = std::make_unique<RenderSystem>();
+    RenderSystem::RenderConfig render_config;
+    render_config.screen_width = config_.screen_width;
+    render_config.screen_height = config_.screen_height;
+    render_config.vsync_enabled = config_.vsync_enabled;
+    render_config.anti_aliasing = config_.anti_aliasing;
+    if (!render_system_->Initialize(render_config)) {
+        return false;
     }
-    game_state_ = GameState::Uninitialized;
+
+    // Initialize input systems
+    input_system_ = std::make_unique<InputSystem>();
+    if (!input_system_->Initialize()) {
+        return false;
+    }
+
+    // Initialize UI system
+    ui_system_ = std::make_unique<UISystem>();
+    if (!ui_system_->Initialize(config_.screen_width, config_.screen_height)) {
+        return false;
+    }
+
+    // Initialize audio system
+    audio_system_ = std::make_unique<AudioSystem>();
+    if (!audio_system_->Initialize()) {
+        return false;
+    }
+
+    // Initialize race manager
+    race_manager_ = std::make_unique<RaceManager>();
+    if (!race_manager_->Initialize()) {
+        return false;
+    }
+
+    // Initialize racing input (depends on input system and race manager)
+    racing_input_ = std::make_unique<RacingInput>(input_system_.get(), race_manager_.get());
+    if (!racing_input_->Initialize()) {
+        return false;
+    }
+
+    // Initialize race UI (depends on race manager, vehicle, and UI system)
+    race_ui_ = std::make_unique<RaceUI>(race_manager_.get(),
+                                        race_manager_->GetPlayerVehicle(),
+                                        racing_input_.get(),
+                                        ui_system_.get());
+    if (!race_ui_->Initialize()) {
+        return false;
+    }
+
+    // Initialize race renderer (depends on race manager and render system)
+    race_renderer_ = std::make_unique<RaceRenderer>(race_manager_.get(), render_system_.get());
+    RaceRenderer::RaceRendererConfig renderer_config;
+    renderer_config.render_track = true;
+    renderer_config.render_vehicles = true;
+    renderer_config.enable_particle_effects = true;
+    renderer_config.show_vehicle_debug = config_.debug_mode;
+    if (!race_renderer_->Initialize(renderer_config)) {
+        return false;
+    }
+
+    return true;
+}
+
+void GameManager::ShutdownSystems() {
+    // Shutdown in reverse order of initialization
+    if (race_renderer_) race_renderer_->Shutdown();
+    if (race_ui_) race_ui_->Shutdown();
+    if (racing_input_) racing_input_->Shutdown();
+    if (race_manager_) race_manager_->Shutdown();
+    if (audio_system_) audio_system_->Shutdown();
+    if (ui_system_) ui_system_->Shutdown();
+    if (input_system_) input_system_->Shutdown();
+    if (render_system_) render_system_->Shutdown();
 }
 
 void GameManager::Update(float deltaTime) {
-    if (game_state_ == GameState::Uninitialized) return;
+    if (!initialized_) return;
 
-    // Apply time scale
-    float scaled_deltaTime = deltaTime * time_scale_;
+    delta_time_ = deltaTime;
+    total_time_ += deltaTime;
+    frame_count_++;
+    CalculateFPS(deltaTime);
 
-    // Update timing
-    if (!paused_) {
-        elapsed_time_ += scaled_deltaTime;
-        level_time_ += scaled_deltaTime;
+    // Process input events
+    ProcessEvents();
+
+    // Update all systems based on game state
+    switch (game_state_) {
+        case GameState::Racing:
+            UpdateSystems(deltaTime);
+            break;
+
+        case GameState::Paused:
+            // Only update input to check for unpause
+            if (input_system_) {
+                input_system_->Update();
+            }
+            break;
+
+        case GameState::MainMenu:
+        case GameState::Loading:
+        case GameState::RaceFinished:
+            if (input_system_) {
+                input_system_->Update();
+            }
+            break;
+
+        default:
+            break;
     }
 
-    // Update all entities
-    if (!paused_) {
-        UpdateEntities(scaled_deltaTime);
-        UpdateCollisions();
+    // Handle state transitions
+    HandleGameStateTransitions();
+}
+
+void GameManager::UpdateSystems(float deltaTime) {
+    // Update input
+    if (input_system_) {
+        input_system_->Update();
     }
 
-    // Apply game rules
-    ApplyGameRules(scaled_deltaTime);
+    if (racing_input_) {
+        racing_input_->Update(deltaTime);
+    }
 
-    // Check game conditions
-    if (CheckWinCondition()) {
-        OnLevelComplete();
-    } else if (CheckLoseCondition()) {
-        OnGameOver();
+    // Update race logic
+    if (race_manager_) {
+        race_manager_->Update(deltaTime);
+        
+        // Check if race is finished
+        auto player_info = race_manager_->GetRacerInfo(race_manager_->GetPlayerVehicle());
+        if (player_info.race_finished) {
+            SetGameState(GameState::RaceFinished);
+        }
+    }
+
+    // Update audio based on vehicle state
+    if (audio_system_ && race_manager_) {
+        Vehicle* player_vehicle = race_manager_->GetPlayerVehicle();
+        if (player_vehicle) {
+            float engine_pitch = 0.5f + (player_vehicle->GetSpeed() / player_vehicle->GetMaxSpeed()) * 1.5f;
+            audio_system_->SetEnginePitch(engine_pitch);
+        }
+    }
+
+    // Update UI
+    if (race_ui_) {
+        race_ui_->Update(deltaTime);
+    }
+
+    if (ui_system_) {
+        ui_system_->Render();
+    }
+
+    // Update camera for renderer
+    if (race_renderer_ && race_manager_) {
+        Vehicle* player_vehicle = race_manager_->GetPlayerVehicle();
+        if (player_vehicle) {
+            race_renderer_->UpdateCameraForPlayer(player_vehicle);
+            race_renderer_->UpdateEffects(deltaTime);
+        }
     }
 }
 
 void GameManager::Render() {
-    // Rendering handled by game engine
+    if (!initialized_ || !render_system_ || !race_renderer_) return;
+
+    switch (game_state_) {
+        case GameState::Racing:
+        case GameState::Paused:
+            race_renderer_->BeginFrame();
+            race_renderer_->RenderFrame();
+            race_renderer_->EndFrame();
+            break;
+
+        case GameState::MainMenu:
+        case GameState::Loading:
+        case GameState::RaceFinished:
+            render_system_->BeginFrame();
+            render_system_->ClearScreen();
+            render_system_->EndFrame();
+            render_system_->Present();
+            break;
+
+        default:
+            break;
+    }
+
+    // Debug info overlay (if enabled)
+    if (config_.show_debug_info && game_state_ == GameState::Racing) {
+        // Debug info would be rendered here
+    }
+
+    if (config_.show_fps) {
+        // FPS display would be rendered here
+    }
+}
+
+void GameManager::ProcessEvents() {
+    if (!input_system_) return;
+
+    // Check for quit
+    if (input_system_->IsKeyPressed(InputSystem::KeyCode::Escape)) {
+        if (game_state_ == GameState::Racing) {
+            PauseGame();
+        } else if (game_state_ == GameState::Paused) {
+            ResumeGame();
+        } else {
+            QuitGame();
+        }
+    }
+
+    // Check for pause toggle
+    if (input_system_->IsKeyPressed(InputSystem::KeyCode::P) && 
+        game_state_ == GameState::Racing) {
+        PauseGame();
+    }
 }
 
 void GameManager::SetGameState(GameState state) {
+    if (game_state_ == state) return;
+
     GameState old_state = game_state_;
     game_state_ = state;
 
-    if (state == GameState::LevelComplete) {
-        OnLevelComplete();
-    } else if (state == GameState::GameOver) {
-        OnGameOver();
+    // Handle state-specific transitions
+    switch (state) {
+        case GameState::Racing:
+            if (audio_system_) {
+                audio_system_->ResumeMusic();
+                audio_system_->PlaySound("race_start");
+            }
+            break;
+
+        case GameState::Paused:
+            if (audio_system_) {
+                audio_system_->PauseMusic();
+            }
+            if (ui_system_) {
+                ui_system_->ShowPauseMenu();
+            }
+            break;
+
+        case GameState::RaceFinished:
+            if (audio_system_) {
+                audio_system_->PauseMusic();
+                audio_system_->PlaySound("race_complete");
+            }
+            break;
+
+        default:
+            break;
     }
 }
 
-bool GameManager::IsGameOver() const {
-    return game_state_ == GameState::GameOver;
+void GameManager::StartRace() {
+    if (!race_manager_) return;
+
+    // Setup race
+    RaceManager::RaceConfig race_config;
+    race_config.num_laps = config_.num_laps;
+    race_config.num_racers = config_.num_racers;
+    race_config.difficulty = static_cast<RaceManager::DifficultyMode>(config_.difficulty);
+    race_config.enable_collisions = config_.enable_collisions;
+    race_config.enable_damage = config_.enable_damage;
+
+    race_manager_->SetRaceConfig(race_config);
+    race_manager_->StartRace();
+
+    SetGameState(GameState::Racing);
 }
 
-bool GameManager::IsLevelComplete() const {
-    return game_state_ == GameState::LevelComplete;
-}
-
-bool GameManager::IsGamePaused() const {
-    return paused_;
-}
-
-void GameManager::Play() {
-    if (game_state_ == GameState::Uninitialized) {
-        Initialize();
-    } else if (game_state_ != GameState::Playing) {
-        game_state_ = GameState::Playing;
-    }
-    paused_ = false;
-}
-
-void GameManager::Pause() {
-    if (game_state_ == GameState::Playing) {
-        paused_ = true;
+void GameManager::PauseGame() {
+    if (game_state_ == GameState::Racing) {
+        SetGameState(GameState::Paused);
     }
 }
 
-void GameManager::Resume() {
-    paused_ = false;
+void GameManager::ResumeGame() {
+    if (game_state_ == GameState::Paused) {
+        SetGameState(GameState::Racing);
+    }
 }
 
-void GameManager::Restart() {
-    Shutdown();
-    Initialize();
+void GameManager::EndRace() {
+    if (race_manager_) {
+        race_manager_->EndRace();
+    }
+    SetGameState(GameState::MainMenu);
+}
+
+void GameManager::RestartRace() {
+    EndRace();
+    StartRace();
 }
 
 void GameManager::QuitGame() {
-    game_state_ = GameState::GameOver;
+    game_state_ = GameState::Shutdown;
 }
 
-void GameManager::SetPlayer(std::shared_ptr<Player> player) {
-    if (player_) {
-        player_->Shutdown();
-    }
-    player_ = player;
-    if (player_) {
-        player_->Initialize();
-    }
-}
-
-void GameManager::AddEntity(std::shared_ptr<GameObject> entity) {
-    if (!entity) return;
-
-    entities_.push_back(entity);
-    entity->Initialize();
-
-    // Sort by type
-    if (auto enemy = std::dynamic_pointer_cast<Enemy>(entity)) {
-        enemies_.push_back(enemy);
-    } else if (auto obstacle = std::dynamic_pointer_cast<Obstacle>(entity)) {
-        obstacles_.push_back(obstacle);
-    } else if (auto powerup = std::dynamic_pointer_cast<PowerUp>(entity)) {
-        powerups_.push_back(powerup);
+const char* GameManager::GetGameStateString() const {
+    switch (game_state_) {
+        case GameState::Uninitialized:
+            return "Uninitialized";
+        case GameState::MainMenu:
+            return "Main Menu";
+        case GameState::Loading:
+            return "Loading";
+        case GameState::Racing:
+            return "Racing";
+        case GameState::Paused:
+            return "Paused";
+        case GameState::RaceFinished:
+            return "Race Finished";
+        case GameState::Shutdown:
+            return "Shutdown";
+        default:
+            return "Unknown";
     }
 }
 
-void GameManager::RemoveEntity(std::shared_ptr<GameObject> entity) {
-    auto it = std::find(entities_.begin(), entities_.end(), entity);
-    if (it != entities_.end()) {
-        entity->Shutdown();
-        entities_.erase(it);
+void GameManager::CalculateFPS(float deltaTime) {
+    fps_timer_ += deltaTime;
+    if (fps_timer_ >= 1.0f) {
+        fps_ = frame_count_ / fps_timer_;
+        frame_count_ = 0;
+        fps_timer_ = 0.0f;
     }
 }
 
-void GameManager::ClearEntities() {
-    for (auto& entity : entities_) {
-        entity->Shutdown();
+void GameManager::HandleGameStateTransitions() {
+    // Additional state transition logic can go here
+}
+
+void GameManager::UpdateInputBindings() {
+    // Update input binding based on manual transmission setting
+    if (racing_input_) {
+        racing_input_->SetAutomatic(!config_.manual_transmission);
     }
-    entities_.clear();
-    enemies_.clear();
-    obstacles_.clear();
-    powerups_.clear();
-}
-
-std::vector<std::shared_ptr<GameObject>> GameManager::GetEntities() const {
-    return entities_;
-}
-
-std::vector<std::shared_ptr<Enemy>> GameManager::GetEnemies() const {
-    return enemies_;
-}
-
-std::vector<std::shared_ptr<Obstacle>> GameManager::GetObstacles() const {
-    return obstacles_;
-}
-
-std::vector<std::shared_ptr<PowerUp>> GameManager::GetPowerUps() const {
-    return powerups_;
-}
-
-std::shared_ptr<Enemy> GameManager::SpawnEnemy(const glm::vec3& position, const std::string& name) {
-    auto enemy = std::make_shared<Enemy>(name);
-    enemy->SetPosition(position);
-    AddEntity(enemy);
-    return enemy;
-}
-
-std::shared_ptr<Obstacle> GameManager::SpawnObstacle(const glm::vec3& position, Obstacle::ObstacleType type, const std::string& name) {
-    auto obstacle = std::make_shared<Obstacle>(name, type);
-    obstacle->SetPosition(position);
-    AddEntity(obstacle);
-    return obstacle;
-}
-
-std::shared_ptr<PowerUp> GameManager::SpawnPowerUp(const glm::vec3& position, PowerUp::PowerUpType type, const std::string& name) {
-    auto powerup = std::make_shared<PowerUp>(name, type);
-    powerup->SetPosition(position);
-    AddEntity(powerup);
-    return powerup;
-}
-
-void GameManager::UpdateCollisions() {
-    // Check all entities for collisions
-    for (size_t i = 0; i < entities_.size(); ++i) {
-        for (size_t j = i + 1; j < entities_.size(); ++j) {
-            if (CheckCollision(*entities_[i], *entities_[j])) {
-                entities_[i]->OnCollisionEnter(*entities_[j]);
-                entities_[j]->OnCollisionEnter(*entities_[i]);
-            }
-        }
-    }
-
-    // Check player collisions
-    if (player_) {
-        for (auto& entity : entities_) {
-            if (CheckCollision(*player_, *entity)) {
-                player_->OnCollisionEnter(*entity);
-                entity->OnCollisionEnter(*player_);
-            }
-        }
-    }
-}
-
-std::vector<GameObject*> GameManager::GetCollidingObjects(const GameObject& object) const {
-    std::vector<GameObject*> colliding;
-    for (auto& entity : entities_) {
-        if (entity.get() != &object && CheckCollision(object, *entity)) {
-            colliding.push_back(entity.get());
-        }
-    }
-    return colliding;
-}
-
-bool GameManager::CheckCollision(const GameObject& a, const GameObject& b) const {
-    if (!a.HasCollision() || !b.HasCollision()) {
-        return false;
-    }
-    return a.IsCollidingWith(b);
-}
-
-void GameManager::AddScore(uint32_t points) {
-    if (player_) {
-        uint32_t adjusted_points = static_cast<uint32_t>(points * GetScoreMultiplier());
-        player_->AddScore(adjusted_points);
-    }
-}
-
-void GameManager::ResetScore() {
-    if (player_) {
-        player_->ResetScore();
-    }
-}
-
-void GameManager::SetLives(int lives) {
-    if (player_) {
-        player_->SetLives(lives);
-    }
-}
-
-void GameManager::NextLevel() {
-    current_level_ = std::min(current_level_ + 1, max_level_);
-    level_time_ = 0.0f;
-}
-
-void GameManager::PreviousLevel() {
-    current_level_ = std::max(1, current_level_ - 1);
-    level_time_ = 0.0f;
-}
-
-float GameManager::GetDifficultyMultiplier() const {
-    switch (difficulty_) {
-        case Difficulty::Easy:
-            return 0.75f;
-        case Difficulty::Normal:
-            return 1.0f;
-        case Difficulty::Hard:
-            return 1.5f;
-        case Difficulty::Extreme:
-            return 2.0f;
-    }
-    return 1.0f;
-}
-
-float GameManager::GetEnemyDamageMultiplier() const {
-    return GetDifficultyMultiplier();
-}
-
-float GameManager::GetEnemySpeedMultiplier() const {
-    return GetDifficultyMultiplier() * 0.8f;  // Speed increases less than damage
-}
-
-float GameManager::GetScoreMultiplier() const {
-    return GetDifficultyMultiplier();
-}
-
-bool GameManager::CheckWinCondition() const {
-    if (!player_ || game_state_ != GameState::Playing) {
-        return false;
-    }
-
-    // Win if all enemies are defeated and player is alive
-    bool all_enemies_defeated = enemies_.empty() || 
-        std::all_of(enemies_.begin(), enemies_.end(), 
-                   [](const auto& e) { return !e->IsAlive(); });
-
-    return all_enemies_defeated && player_->IsAlive();
-}
-
-bool GameManager::CheckLoseCondition() const {
-    if (!player_ || game_state_ != GameState::Playing) {
-        return false;
-    }
-
-    // Lose if player is dead
-    return !player_->IsAlive() || player_->IsGameOver();
-}
-
-void GameManager::ApplyGameRules(float deltaTime) {
-    if (!player_) return;
-
-    // Scale enemy difficulty
-    for (auto& enemy : enemies_) {
-        if (enemy && enemy->IsActive()) {
-            // Difficulty scaling applied when damage is calculated
-        }
-    }
-}
-
-void GameManager::UpdateEntities(float deltaTime) {
-    if (player_) {
-        player_->Update(deltaTime);
-    }
-
-    for (auto& entity : entities_) {
-        if (entity && entity->IsActive()) {
-            entity->Update(deltaTime);
-        }
-    }
-}
-
-void GameManager::UpdatePlayer(float deltaTime) {
-    if (player_) {
-        player_->Update(deltaTime);
-    }
-}
-
-void GameManager::UpdateEnemies(float deltaTime) {
-    for (auto& enemy : enemies_) {
-        if (enemy && enemy->IsActive()) {
-            enemy->Update(deltaTime);
-        }
-    }
-}
-
-void GameManager::UpdateObstacles(float deltaTime) {
-    for (auto& obstacle : obstacles_) {
-        if (obstacle && obstacle->IsActive()) {
-            obstacle->Update(deltaTime);
-        }
-    }
-}
-
-void GameManager::UpdatePowerUps(float deltaTime) {
-    for (auto& powerup : powerups_) {
-        if (powerup && powerup->IsActive()) {
-            powerup->Update(deltaTime);
-        }
-    }
-}
-
-void GameManager::CleanupDeadEntities() {
-    auto it = entities_.begin();
-    while (it != entities_.end()) {
-        if (!(*it)->IsActive() || !(*it)->IsAlive()) {
-            (*it)->Shutdown();
-            it = entities_.erase(it);
-        } else {
-            ++it;
-        }
-    }
-}
-
-void GameManager::OnPlayerDeath() {
-    if (player_) {
-        player_->LoseLife();
-        if (player_->IsGameOver()) {
-            game_state_ = GameState::GameOver;
-        }
-    }
-}
-
-void GameManager::OnLevelComplete() {
-    game_state_ = GameState::LevelComplete;
-    if (current_level_ < max_level_) {
-        NextLevel();
-    } else {
-        game_state_ = GameState::Victory;
-    }
-}
-
-void GameManager::OnGameOver() {
-    game_state_ = GameState::GameOver;
-}
-
-int GameManager::GetEnemyCount() const {
-    return std::count_if(enemies_.begin(), enemies_.end(),
-                        [](const auto& e) { return e && e->IsActive(); });
-}
-
-int GameManager::GetObstacleCount() const {
-    return std::count_if(obstacles_.begin(), obstacles_.end(),
-                        [](const auto& o) { return o && o->IsActive(); });
-}
-
-int GameManager::GetPowerUpCount() const {
-    return std::count_if(powerups_.begin(), powerups_.end(),
-                        [](const auto& p) { return p && p->IsActive(); });
 }
 
 std::string GameManager::GetDebugInfo() const {
     std::stringstream ss;
     ss << "GameManager Debug Info\n";
-    ss << "- State: ";
-    switch (game_state_) {
-        case GameState::Uninitialized:
-            ss << "Uninitialized";
-            break;
-        case GameState::Playing:
-            ss << "Playing";
-            break;
-        case GameState::Paused:
-            ss << "Paused";
-            break;
-        case GameState::LevelComplete:
-            ss << "LevelComplete";
-            break;
-        case GameState::GameOver:
-            ss << "GameOver";
-            break;
-        case GameState::Victory:
-            ss << "Victory";
-            break;
-    }
-    ss << "\n";
-    ss << "- Level: " << current_level_ << "/" << max_level_ << "\n";
+    ss << "- State: " << GetGameStateString() << "\n";
+    ss << "- Initialized: " << (initialized_ ? "Yes" : "No") << "\n";
+    ss << "- Frame Count: " << frame_count_ << "\n";
+    ss << "- FPS: " << std::fixed << std::setprecision(1) << fps_ << "\n";
+    ss << "- Total Time: " << std::setprecision(2) << total_time_ << "s\n";
+    ss << "- Delta Time: " << std::setprecision(3) << delta_time_ << "s\n";
+    ss << "- Screen: " << config_.screen_width << "x" << config_.screen_height << "\n";
+    ss << "- Audio: " << (config_.audio_enabled ? "Enabled" : "Disabled") << "\n";
+    ss << "- Master Volume: " << std::setprecision(1) << config_.master_volume * 100.0f << "%\n";
     ss << "- Difficulty: ";
-    switch (difficulty_) {
-        case Difficulty::Easy:
+    switch (config_.difficulty) {
+        case DifficultyMode::Easy:
             ss << "Easy";
             break;
-        case Difficulty::Normal:
+        case DifficultyMode::Normal:
             ss << "Normal";
             break;
-        case Difficulty::Hard:
+        case DifficultyMode::Hard:
             ss << "Hard";
             break;
-        case Difficulty::Extreme:
-            ss << "Extreme";
+        case DifficultyMode::Expert:
+            ss << "Expert";
             break;
     }
     ss << "\n";
-    ss << "- Score: " << GetScore() << "\n";
-    ss << "- Lives: " << GetLives() << "\n";
-    ss << "- Elapsed Time: " << std::fixed << std::setprecision(2) << elapsed_time_ << "s\n";
-    ss << "- Level Time: " << level_time_ << "s\n";
-    ss << "- Entities: " << GetEntityCount() << " (E:" << GetEnemyCount() 
-       << " O:" << GetObstacleCount() << " P:" << GetPowerUpCount() << ")\n";
-    ss << "- Paused: " << (paused_ ? "Yes" : "No");
+    ss << "- Num Laps: " << config_.num_laps << "\n";
+    ss << "- Num Racers: " << config_.num_racers << "\n";
+    ss << "- Manual Transmission: " << (config_.manual_transmission ? "Yes" : "No") << "\n";
+    return ss.str();
+}
+
+std::string GameManager::GetSystemsStatus() const {
+    std::stringstream ss;
+    ss << "System Status\n";
+    ss << "- RenderSystem: " << (render_system_ && render_system_->GetLoadedTextureCount() > 0 ? "OK" : "Not Ready") << "\n";
+    ss << "- InputSystem: " << (input_system_ ? "OK" : "Not Ready") << "\n";
+    ss << "- RacingInput: " << (racing_input_ ? "OK" : "Not Ready") << "\n";
+    ss << "- AudioSystem: " << (audio_system_ ? "OK" : "Not Ready") << "\n";
+    ss << "- UISystem: " << (ui_system_ ? "OK" : "Not Ready") << "\n";
+    ss << "- RaceUI: " << (race_ui_ ? "OK" : "Not Ready") << "\n";
+    ss << "- RaceManager: " << (race_manager_ ? "OK" : "Not Ready") << "\n";
+    ss << "- RaceRenderer: " << (race_renderer_ ? "OK" : "Not Ready") << "\n";
     return ss.str();
 }
