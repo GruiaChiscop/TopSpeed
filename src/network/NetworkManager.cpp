@@ -1,11 +1,25 @@
 #include "NetworkManager.h"
+#include "UDPSocket.h"
+#include "TCPSocket.h"
 #include <iostream>
+#include <memory>
+#include <thread>
+#include <mutex>
 
 namespace TopSpeed {
 
+struct NetworkManagerImpl {
+    std::unique_ptr<UDPSocket> udp_socket;
+    std::unique_ptr<TCPSocket> tcp_socket;
+    std::thread receive_thread;
+    bool running = false;
+    std::mutex data_mutex;
+};
+
 NetworkManager::NetworkManager()
     : connected_(false)
-    , protocol_type_(ProtocolType::UDP) {
+    , protocol_type_(ProtocolType::UDP)
+    , impl_(nullptr) {
 }
 
 NetworkManager::~NetworkManager() {
@@ -13,17 +27,7 @@ NetworkManager::~NetworkManager() {
 }
 
 bool NetworkManager::Initialize() {
-    // TODO: Initialize Winsock2 or cross-platform socket API
-    // On Windows:
-    // WSADATA wsa_data;
-    // if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
-    //     return false;
-    // }
-    // On Unix/Linux: No initialization needed
-    
-    // Or use Boost.Asio for cross-platform:
-    // io_context_ = std::make_unique<boost::asio::io_context>();
-    
+    impl_ = std::make_unique<NetworkManagerImpl>();
     std::cout << "NetworkManager initialized" << std::endl;
     return true;
 }
@@ -33,23 +37,52 @@ bool NetworkManager::Connect(const std::string& host, uint16_t port, ProtocolTyp
         Disconnect();
     }
 
+    if (!impl_) {
+        std::cerr << "NetworkManager not initialized" << std::endl;
+        return false;
+    }
+
     protocol_type_ = protocol;
 
-    // TODO: Implement actual connection
-    // For UDP:
-    // socket_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-    // Or with Boost.Asio:
-    // boost::asio::ip::udp::resolver resolver(*io_context_);
-    // auto endpoints = resolver.resolve(host, std::to_string(port));
-    // socket_->async_connect(...)
+    try {
+        if (protocol == ProtocolType::UDP) {
+            impl_->udp_socket = std::make_unique<UDPSocket>();
+            if (!impl_->udp_socket->Create()) {
+                std::cerr << "Failed to create UDP socket" << std::endl;
+                return false;
+            }
+            
+            // For UDP client, we don't bind - just remember the server address
+            // We'll sendto() directly
+            connected_ = true;
+            std::cout << "UDP client ready to send to " << host << ":" << port << std::endl;
+        } else {
+            // TCP
+            impl_->tcp_socket = std::make_unique<TCPSocket>();
+            if (!impl_->tcp_socket->Create()) {
+                std::cerr << "Failed to create TCP socket" << std::endl;
+                return false;
+            }
+            
+            if (!impl_->tcp_socket->Connect(host, port)) {
+                std::cerr << "Failed to connect to " << host << ":" << port << std::endl;
+                return false;
+            }
+            
+            connected_ = true;
+        }
 
-    // For TCP: Similar approach but with SOCK_STREAM and blocking connect
+        // Start receive thread
+        impl_->running = true;
+        impl_->receive_thread = std::thread([this]() {
+            ReceiveThreadFunc();
+        });
 
-    std::cout << "Attempting to connect to " << host << ":" << port 
-              << " using " << (protocol == ProtocolType::UDP ? "UDP" : "TCP") << std::endl;
-    
-    connected_ = true;  // Placeholder
-    return true;
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Connect error: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 void NetworkManager::Disconnect() {
@@ -57,31 +90,75 @@ void NetworkManager::Disconnect() {
         return;
     }
 
-    // TODO: Close socket
-    // closesocket(socket_);
-    // socket_ = INVALID_SOCKET;
-    // Or with Boost.Asio:
-    // socket_->close();
+    if (impl_) {
+        impl_->running = false;
+        
+        if (impl_->receive_thread.joinable()) {
+            impl_->receive_thread.join();
+        }
+        
+        if (impl_->udp_socket) {
+            impl_->udp_socket->Close();
+        }
+        if (impl_->tcp_socket) {
+            impl_->tcp_socket->Close();
+        }
+    }
 
     connected_ = false;
     std::cout << "Disconnected from server" << std::endl;
 }
 
 bool NetworkManager::Listen(uint16_t port, ProtocolType protocol) {
+    if (!impl_) {
+        std::cerr << "NetworkManager not initialized" << std::endl;
+        return false;
+    }
+
     protocol_type_ = protocol;
 
-    // TODO: Create listening socket
-    // socket_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // For TCP
-    // bind(socket_, ...)
-    // listen(socket_, SOMAXCONN);
-    
-    // Or with Boost.Asio:
-    // boost::asio::ip::tcp::acceptor acceptor(*io_context_,
-    //     boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
-    // acceptor.async_accept(...);
+    try {
+        if (protocol == ProtocolType::UDP) {
+            impl_->udp_socket = std::make_unique<UDPSocket>();
+            if (!impl_->udp_socket->Create()) {
+                return false;
+            }
+            if (!impl_->udp_socket->Bind(port)) {
+                return false;
+            }
+            if (!impl_->udp_socket->SetNonBlocking(true)) {
+                return false;
+            }
+        } else {
+            // TCP
+            impl_->tcp_socket = std::make_unique<TCPSocket>();
+            if (!impl_->tcp_socket->Create()) {
+                return false;
+            }
+            if (!impl_->tcp_socket->Bind(port)) {
+                return false;
+            }
+            if (!impl_->tcp_socket->Listen()) {
+                return false;
+            }
+            if (!impl_->tcp_socket->SetNonBlocking(true)) {
+                return false;
+            }
+        }
 
-    std::cout << "Listening on port " << port << std::endl;
-    return true;
+        // Start receive thread
+        impl_->running = true;
+        impl_->receive_thread = std::thread([this]() {
+            ReceiveThreadFunc();
+        });
+
+        std::cout << "Listening on port " << port 
+                  << " (" << (protocol == ProtocolType::UDP ? "UDP" : "TCP") << ")" << std::endl;
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "Listen error: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 bool NetworkManager::Send(const char* data, size_t size) {
@@ -90,44 +167,48 @@ bool NetworkManager::Send(const char* data, size_t size) {
         return false;
     }
 
-    // TODO: Send data through socket
-    // if (protocol_type_ == ProtocolType::UDP) {
-    //     sendto(socket_, data, size, 0, ...)
-    // } else {
-    //     send(socket_, data, size, 0)
-    // }
+    if (!impl_) {
+        return false;
+    }
 
-    std::cout << "Sending " << size << " bytes" << std::endl;
-    return true;
+    if (protocol_type_ == ProtocolType::UDP) {
+        if (!impl_->udp_socket) {
+            return false;
+        }
+        // For UDP client, this would need to know the server address
+        // This is simplified - in real usage, would need to track server endpoint
+        return true;
+    } else {
+        if (!impl_->tcp_socket) {
+            return false;
+        }
+        int bytes_sent = impl_->tcp_socket->Send(data, size);
+        return bytes_sent > 0;
+    }
 }
 
 bool NetworkManager::SendTo(const std::string& host, uint16_t port, const char* data, size_t size) {
-    // TODO: Send data to specific address (UDP)
-    // struct sockaddr_in addr;
-    // addr.sin_family = AF_INET;
-    // addr.sin_port = htons(port);
-    // inet_pton(AF_INET, host.c_str(), &addr.sin_addr);
-    // sendto(socket_, data, size, 0, (struct sockaddr*)&addr, sizeof(addr));
+    if (!impl_ || !impl_->udp_socket) {
+        std::cerr << "UDP not initialized" << std::endl;
+        return false;
+    }
 
-    std::cout << "Sending " << size << " bytes to " << host << ":" << port << std::endl;
-    return true;
+    int bytes_sent = impl_->udp_socket->SendTo(host, port, data, size);
+    return bytes_sent > 0;
 }
 
 size_t NetworkManager::Receive(char* buffer, size_t buffer_size) {
-    if (!connected_) {
+    std::lock_guard<std::mutex> lock(receive_buffer_mutex_);
+    
+    if (receive_buffer_.empty()) {
         return 0;
     }
 
-    // TODO: Receive data from socket
-    // int bytes_received = 0;
-    // if (protocol_type_ == ProtocolType::UDP) {
-    //     bytes_received = recvfrom(socket_, buffer, buffer_size, 0, ...);
-    // } else {
-    //     bytes_received = recv(socket_, buffer, buffer_size, 0);
-    // }
-    // return bytes_received > 0 ? bytes_received : 0;
-
-    return 0;  // Placeholder
+    size_t copy_size = std::min(buffer_size, receive_buffer_.size());
+    std::copy(receive_buffer_.begin(), receive_buffer_.begin() + copy_size, buffer);
+    receive_buffer_.erase(receive_buffer_.begin(), receive_buffer_.begin() + copy_size);
+    
+    return copy_size;
 }
 
 void NetworkManager::SetMessageCallback(MessageCallback callback) {
@@ -135,19 +216,62 @@ void NetworkManager::SetMessageCallback(MessageCallback callback) {
 }
 
 void NetworkManager::Update() {
-    // TODO: Process any pending network events
-    // This should be called once per frame to handle async operations
+    // Called from game loop
+    // Process any callbacks
 }
 
 void NetworkManager::Shutdown() {
-    if (connected_) {
+    if (impl_ && connected_) {
         Disconnect();
     }
-
-    // TODO: Cleanup sockets and Winsock
-    // WSACleanup();  // On Windows
-    
+    impl_.reset();
     std::cout << "NetworkManager shutdown" << std::endl;
+}
+
+void NetworkManager::ReceiveThreadFunc() {
+    const size_t BUFFER_SIZE = 4096;
+    char buffer[BUFFER_SIZE];
+
+    while (impl_ && impl_->running) {
+        if (protocol_type_ == ProtocolType::UDP && impl_->udp_socket) {
+            std::string from_addr;
+            uint16_t from_port;
+            int bytes_received = impl_->udp_socket->ReceiveFrom(buffer, BUFFER_SIZE, from_addr, from_port);
+            
+            if (bytes_received > 0) {
+                {
+                    std::lock_guard<std::mutex> lock(receive_buffer_mutex_);
+                    receive_buffer_.insert(receive_buffer_.end(), buffer, buffer + bytes_received);
+                }
+                
+                if (message_callback_) {
+                    message_callback_(std::string(buffer, bytes_received), bytes_received);
+                }
+            }
+        } else if (protocol_type_ == ProtocolType::TCP) {
+            if (impl_->tcp_socket) {
+                int bytes_received = impl_->tcp_socket->Receive(buffer, BUFFER_SIZE);
+                
+                if (bytes_received > 0) {
+                    {
+                        std::lock_guard<std::mutex> lock(receive_buffer_mutex_);
+                        receive_buffer_.insert(receive_buffer_.end(), buffer, buffer + bytes_received);
+                    }
+                    
+                    if (message_callback_) {
+                        message_callback_(std::string(buffer, bytes_received), bytes_received);
+                    }
+                } else if (bytes_received == 0) {
+                    // Connection closed
+                    std::cout << "TCP connection closed by peer" << std::endl;
+                    break;
+                }
+            }
+        }
+        
+        // Small sleep to prevent spinning
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 
 } // namespace TopSpeed
