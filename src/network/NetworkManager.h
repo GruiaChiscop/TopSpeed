@@ -4,8 +4,13 @@
 #include <cstdint>
 #include <memory>
 #include <functional>
+#include <vector>
+#include <mutex>
 
 namespace TopSpeed {
+
+// Forward declaration
+struct NetworkManagerImpl;
 
 /**
  * NetworkManager provides cross-platform networking using modern UDP/TCP
@@ -60,7 +65,7 @@ public:
     bool Send(const char* data, size_t size);
 
     /**
-     * Send data to specific address
+     * Send data to specific address (UDP only)
      * @param host Target hostname or IP
      * @param port Target port
      * @param data Data to send
@@ -103,11 +108,16 @@ private:
     bool connected_;
     ProtocolType protocol_type_;
     MessageCallback message_callback_;
-    // TODO: Add actual socket handles/pointers
-    // SOCKET socket_;
-    // Or use Boost.Asio:
-    // std::unique_ptr<boost::asio::io_context> io_context_;
-    // std::unique_ptr<boost::asio::ip::udp::socket> socket_;
+    std::unique_ptr<NetworkManagerImpl> impl_;
+    
+    // Receive buffer and synchronization
+    std::vector<char> receive_buffer_;
+    mutable std::mutex receive_buffer_mutex_;
+
+    /**
+     * Thread function for receiving data
+     */
+    void ReceiveThreadFunc();
 };
 
 } // namespace TopSpeed
